@@ -11,7 +11,7 @@ app = Flask(__name__)
 run_with_ngrok(app)
 CORS(app, origins="*")
 
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = 'GPT_KEY_ADD'
 
 MONSTER_API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImE3MjY3ZWUzZWMyOTMxZThkZjM2OTFlNzFhMDEwM2VhIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDktMDhUMTE6NDI6MjMuODkxMDE0In0.531Bc7PlsegG3OrcAZoknua2Hd9_dyx53DUfeMeZoIg'
 
