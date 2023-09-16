@@ -4,14 +4,13 @@ import requests
 import openai
 import time
 from flask_cors import CORS
-from flask_ngrok import run_with_ngrok
 import os
+from pydub import AudioSegment
 
 app = Flask(__name__)
-run_with_ngrok(app)
 CORS(app, origins="*")
 
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = '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'
 
 MONSTER_API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImE3MjY3ZWUzZWMyOTMxZThkZjM2OTFlNzFhMDEwM2VhIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDktMDhUMTE6NDI6MjMuODkxMDE0In0.531Bc7PlsegG3OrcAZoknua2Hd9_dyx53DUfeMeZoIg'
 
@@ -22,6 +21,7 @@ def send_wav_to_whisper(file):
     url = "https://api.monsterapi.ai/v1/generate/whisper"
     print(file)
     file_format = file
+    print(file_format[-3:])
     files = {"file": (file, open(file, "rb"), f"audio/{file_format[-3:]}")}
     headers = {
         "accept": "application/json",
@@ -108,21 +108,40 @@ def generate_audio():
         voice = request.form["voice"]
         if file:
             try:
-                timestamp = int(time.time())
-                new_filename = f"{timestamp}_{file.filename}"
-                file.save(new_filename)
-                text = send_wav_to_whisper(new_filename)
-                prompt = text["text"]
-                response = gpt_response(prompt)
-                if voice == "":
-                    audio = bark_audio_generate(response, bark_url)
+                # Create a folder to store audio files
+                if not os.path.exists("audio_files"):
+                    os.makedirs("audio_files")
+                if file.filename[7:] == "ogg":
+                    timestamp = int(time.time())
+                    new_filename = f"audio_files/{timestamp}_{file.filename[:7]}wav"
+                    sound = AudioSegment.from_file(file)
+                    sound.export(new_filename, format="wav")
+                    file.save(new_filename)
+                    print("converting Audio")
                 else:
-                    audio = bark_audio_prompt_generate(
-                        response, bark_url, voice)
-                result = audio.json()
-                audio_url = result.get('audio_url')
-                os.remove(new_filename)
-                return audio_url
+                    timestamp = int(time.time())
+                    new_filename = f"audio_files/{timestamp}_{file.filename}"
+                    file.save(new_filename)
+                    print("Not Converting Audio")
+                
+                # Change file permissions (e.g., make the file readable)
+                os.chmod(new_filename, 0o644)  # Set permissions as needed
+
+                text_response = send_wav_to_whisper(new_filename)
+                if isinstance(text_response, dict):
+                    prompt = text_response["text"]
+                    response = gpt_response(prompt)
+                    if voice == "":
+                        audio = bark_audio_generate(response, bark_url)
+                    else:
+                        audio = bark_audio_prompt_generate(
+                            response, bark_url, voice)
+                    result = audio.json()
+                    audio_url = result.get('audio_url')
+                    os.remove(new_filename)  # Remove the saved audio file
+                    return audio_url
+                else:
+                    return f"Invalid response format from send_wav_to_whisper: {text_response}"
             except Exception as e:
                 return f"Error: {str(e)}"
     except Exception as e:
@@ -130,4 +149,6 @@ def generate_audio():
 
 
 if __name__ == '__main__':
-    app.run()
+    if not os.path.exists("audio_files"):
+        os.makedirs("audio_files")
+    app.run(debug=True, host='0.0.0.0', port=5000)
