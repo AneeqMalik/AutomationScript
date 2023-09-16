@@ -116,7 +116,6 @@ def generate_audio():
                     new_filename = f"audio_files/{timestamp}_{file.filename[:7]}wav"
                     sound = AudioSegment.from_file(file)
                     sound.export(new_filename, format="wav")
-                    file.save(new_filename)
                     print("converting Audio")
                 else:
                     timestamp = int(time.time())
