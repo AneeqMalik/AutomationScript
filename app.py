@@ -10,7 +10,7 @@ from pydub import AudioSegment
 app = Flask(__name__)
 CORS(app, origins="*")
 
-CHAT_GPT_API_KEY = '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'
+CHAT_GPT_API_KEY = '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'
 
 MONSTER_API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImE3MjY3ZWUzZWMyOTMxZThkZjM2OTFlNzFhMDEwM2VhIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDktMDhUMTE6NDI6MjMuODkxMDE0In0.531Bc7PlsegG3OrcAZoknua2Hd9_dyx53DUfeMeZoIg'
 
