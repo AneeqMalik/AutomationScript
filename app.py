@@ -10,7 +10,7 @@ from pydub import AudioSegment
 app = Flask(__name__)
 CORS(app, origins="*")
 
-CHAT_GPT_API_KEY = 'GPT KEY'
+CHAT_GPT_API_KEY = 'GPT TOKEN'
 
 MONSTER_API_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImE3MjY3ZWUzZWMyOTMxZThkZjM2OTFlNzFhMDEwM2VhIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDktMDhUMTE6NDI6MjMuODkxMDE0In0.531Bc7PlsegG3OrcAZoknua2Hd9_dyx53DUfeMeZoIg'
 
@@ -111,7 +111,7 @@ def generate_audio():
                 # Create a folder to store audio files
                 if not os.path.exists("audio_files"):
                     os.makedirs("audio_files")
-                if file.filename[7:] == "ogg":
+                if file.filename[7:] == "ogg" or file.filename[7:] == "oga":
                     timestamp = int(time.time())
                     new_filename = f"audio_files/{timestamp}_{file.filename[:7]}wav"
                     sound = AudioSegment.from_file(file)
